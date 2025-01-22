@@ -3,6 +3,7 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import Loader from "../module/Loader";
+import Timer from "../module/Timer";
 
 function CheckOtpForm({ mobile, setStep }) {
   const [otp, setOTP] = useState("");
@@ -61,15 +62,18 @@ function CheckOtpForm({ mobile, setStep }) {
             onChange={(e) => setOTP(e.target.value)}
             className=" p-1 border border-solid border-gray-600 rounded-md"
           />
-          <button
-            type="submit"
-            className="w-fit px-3 py-1 border-none bg-[#a62626] text-white rounded-md cursor-pointer"
-          >
-            ورود
-          </button>
+          <div className="flex justify-between">
+            <button
+              type="submit"
+              className="w-fit px-3 py-1 border-none bg-main text-white rounded-md cursor-pointer"
+            >
+              ورود
+            </button>
+            <Timer mobile={mobile} />
+          </div>
           <button
             onClick={() => setStep(1)}
-            className="bg-white px-3 py-1 rounded-md text-[#a62626] border border-solid border-[#a62626] w-fit mt-7"
+            className="bg-white px-3 py-1 rounded-md text-main border border-solid border-main w-fit mt-7"
           >
             تغییر شماره موبایل
           </button>

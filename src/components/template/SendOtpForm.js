@@ -42,7 +42,7 @@ function SendOtpForm({ mobile, setMobile, setStep }) {
       />
       <button
         type="submit"
-        className="w-fit px-3 py-1 border-none bg-[#a62626] text-white rounded-md cursor-pointer"
+        className="w-fit px-3 py-1 border-none bg-main text-white rounded-md cursor-pointer"
       >
         ارسال کد تایید
       </button>

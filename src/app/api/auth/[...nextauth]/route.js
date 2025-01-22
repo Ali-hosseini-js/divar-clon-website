@@ -26,10 +26,25 @@ export const authOptions = {
 
         if (!isValid) throw new Error("کد وارد شده اشتباه است");
 
+        console.log("Authorize function returning:", { mobile });
         return { mobile };
       },
     }),
   ],
+  callbacks: {
+    // Add the `mobile` field to the JWT token
+    async jwt({ token, user }) {
+      if (user) {
+        token.mobile = user.mobile; // Pass the `mobile` field from the user object to the token
+      }
+      return token;
+    },
+    // Add the `mobile` field to the session object
+    async session({ session, token }) {
+      session.user.mobile = token.mobile; // Pass the `mobile` field from the token to the session
+      return session;
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);

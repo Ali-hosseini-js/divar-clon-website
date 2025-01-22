@@ -1,5 +1,8 @@
 import { vazir } from "@/utils/fonts";
 import "./globals.css";
+import Footer from "@/layout/Footer";
+import Header from "@/layout/Header";
+import NextAuthProvider from "@/providers/NextAuthProvider";
 
 export const metadata = {
   title: "Divar clone website",
@@ -9,7 +12,13 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fa" dir="rtl">
-      <body className={vazir.className}>{children}</body>
+      <body className={vazir.className}>
+        <NextAuthProvider>
+          <Header />
+          {children}
+          <Footer />
+        </NextAuthProvider>
+      </body>
     </html>
   );
 }

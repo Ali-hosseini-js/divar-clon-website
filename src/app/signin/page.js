@@ -1,5 +1,4 @@
-import AuthPage from "@/components/layout/AuthPage";
-import React from "react";
+import AuthPage from "@/layout/AuthPage";
 
 function page() {
   return <AuthPage />;
