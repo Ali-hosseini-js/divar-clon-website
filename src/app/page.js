@@ -1,3 +1,11 @@
+import Sidebar from "@/template/Sidebar";
+import Main from "@/template/Main";
+
 export default function Home() {
-  return <div className="text-red-700"></div>;
+  return (
+    <div className="flex">
+      <Sidebar />
+      <Main />
+    </div>
+  );
 }

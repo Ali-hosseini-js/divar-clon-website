@@ -6,7 +6,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
 import { Types } from "mongoose";
 import { writeFile } from "fs/promises";
-import { join } from "path";
+import path from "path";
 
 export async function POST(request: NextRequest) {
   //request: NextRequest is neccessary for formData req and it should be in typescript format
@@ -23,16 +23,21 @@ export async function POST(request: NextRequest) {
     const city = data.get("city") as string;
     const amount = data.get("amount") as string;
 
-    if (!file) {
+    const randomKey = Math.floor(
+      1000000000 + Math.random() * 9000000000
+    ).toString();
+
+    if (!file || !title || !content || !category || !city || !amount) {
       return NextResponse.json({ error: "فایلی وجود ندارد" }, { status: 401 });
     }
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    const path = join("public/uploads", "tmp", file.name);
-    await writeFile(path, buffer);
-    console.log(`open ${path} to see the upload file`);
+    const filePath = path.join("public", "uploads", `${randomKey}.jpg`);
+    const imagePath = `/uploads/${randomKey}.jpg`;
+    console.log("path:", imagePath);
+    await writeFile(filePath, buffer);
 
     // Get the session
     const session = await getServerSession(authOptions);
@@ -61,7 +66,7 @@ export async function POST(request: NextRequest) {
       category,
       city,
       amount: +amount,
-      image: buffer, // Save the file path
+      image: imagePath, // Save the file path
       userId: Types.ObjectId.createFromHexString(userId),
     });
 
@@ -89,7 +94,7 @@ export async function GET() {
       );
     }
 
-    // // Find the user
+    // Find the user
     const user = await DivarUser.findOne({ mobile: session.user.mobile });
     if (!user) {
       return NextResponse.json(
@@ -102,9 +107,7 @@ export async function GET() {
 
     const profiles = await DivarProfile.find({ userId: userIdentifier });
 
-    console.log("profiles:", profiles);
-
-    // return NextResponse.json({ data: profiles });
+    return NextResponse.json({ data: profiles });
   } catch (error) {
     return NextResponse.json(
       { error: "مشکلی در سرور رخ داده است" },

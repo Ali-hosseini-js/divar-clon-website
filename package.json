@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "blob-polyfill": "^9.0.20240710",
     "formidable": "^3.5.2",
     "kavenegar": "^1.1.4",
     "mongoose": "^8.9.5",
