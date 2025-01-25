@@ -6,9 +6,7 @@ export async function GET() {
   try {
     await connectDB();
 
-    const profiles = await DivarProfile.find({ published: true }).select(
-      "-userId"
-    );
+    const profiles = await DivarProfile.find({ published: false });
 
     return NextResponse.json({ data: profiles });
   } catch (error) {

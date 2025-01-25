@@ -20,7 +20,7 @@ function Main() {
   }, []);
 
   return (
-    <div className="flex items-center flex-wrap justify-between mt-5 w-full mx-[100px]">
+    <div className="flex items-center flex-wrap justify-between mt-5 w-full ">
       {loading ? (
         <Loader />
       ) : (
