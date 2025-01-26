@@ -1,15 +1,15 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import divar from "@/public/divar.svg";
 import location from "@/public/location.svg";
 import DropDown from "@/module/DropDown";
-import DivarUser from "@/models/DivarUser";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { useSession } from "next-auth/react";
 
-async function Header() {
-  const session = await getServerSession(authOptions);
-  const user = await DivarUser.findOne({ mobile: session?.user.mobile });
+export default function Header() {
+  const { data: session } = useSession();
+  const isAdmin = session?.user?.role === "ADMIN";
 
   return (
     <header className="flex justify-between items-center border-b-2 border-solid border-gray-300 py-3 mb-5">
@@ -29,11 +29,11 @@ async function Header() {
         </span>
       </div>
       <div className="flex items-center gap-14">
-        {user?.role === "ADMIN" ? (
+        {isAdmin && (
           <Link href="/admin" className="text-gray-400 text-sm">
             پنل ادمین
           </Link>
-        ) : null}
+        )}
 
         <DropDown />
         <Link
@@ -46,5 +46,3 @@ async function Header() {
     </header>
   );
 }
-
-export default Header;
