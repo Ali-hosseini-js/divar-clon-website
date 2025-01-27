@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -14,6 +15,8 @@ function AddPost() {
     amount: null,
     images: null,
   });
+
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,6 +67,7 @@ function AddPost() {
     } else {
       toast.success(data.message);
     }
+    router.refresh();
   };
 
   return (

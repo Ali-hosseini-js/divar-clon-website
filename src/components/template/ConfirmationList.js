@@ -22,13 +22,26 @@ function ConfirmationList() {
     fetchData();
   }, []);
 
-  const submitHandler = async (i) => {
-    const res = await fetch(`/api/admin/publish/${i}`, { method: "PATCH" });
-    const result = await res.json();
-    if (result.message) {
-      toast.success(result.message);
+  const submitHandler = async (id) => {
+    const res = await fetch(`/api/admin/publish/${id}`, { method: "PATCH" });
+    const data = await res.json();
+    if (data.error) {
+      toast.error(data.error);
+    } else {
+      toast.success(data.message);
       fetchData();
     }
+  };
+
+  const deleteHandler = async (id) => {
+    const res = await fetch(`api/user/delete/${id}`, { method: "DELETE" });
+    const data = await res.json();
+    if (data.error) {
+      toast.error(data.error);
+    } else {
+      toast.success(data.message);
+    }
+    fetchData();
   };
 
   return (
@@ -70,12 +83,20 @@ function ConfirmationList() {
                   {sp(post.amount)} تومان
                 </span>
               </div>
-              <button
-                className="bg-main text-white py-2 px-6 text-center rounded mr-[40px]"
-                onClick={() => submitHandler(post._id)}
-              >
-                انتشار
-              </button>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => submitHandler(post._id)}
+                  className="bg-white text-main border border-main  py-2 px-6 rounded text-sm cursor-pointer w-[80px]"
+                >
+                  انتشار
+                </button>
+                <button
+                  onClick={() => deleteHandler(post._id)}
+                  className="bg-main text-white border-none py-2 px-6 rounded text-sm cursor-pointer w-[80px]"
+                >
+                  حذف
+                </button>
+              </div>
               <Toaster />
             </div>
           ))}

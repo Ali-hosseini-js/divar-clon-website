@@ -9,16 +9,29 @@ function PostList() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
 
+  const fetchData = async () => {
+    const res = await fetch("api/user");
+    const data = await res.json();
+    setData(data);
+    console.log("data:", data);
+    setLoading(false);
+  };
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch("api/user");
-      const data = await res.json();
-      setData(data);
-      console.log("data:", data);
-      setLoading(false);
-    };
     fetchData();
   }, []);
+
+  const deleteHandler = async (id) => {
+    const res = await fetch(`api/user/delete/${id}`, { method: "DELETE" });
+    const data = await res.json();
+    if (data.error) {
+      toast.error(data.error);
+    } else {
+      toast.success(data.message);
+    }
+    fetchData();
+  };
+
+  const editHandler = () => {};
 
   return (
     <div>
@@ -53,6 +66,14 @@ function PostList() {
                 <span className="text-sm text-gray-500">
                   {sp(post.amount)} تومان
                 </span>
+              </div>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={() => deleteHandler(post._id)}
+                  className="bg-main text-white border-none py-2 px-6 rounded text-sm cursor-pointer w-[80px]"
+                >
+                  حذف
+                </button>
               </div>
             </div>
           ))}

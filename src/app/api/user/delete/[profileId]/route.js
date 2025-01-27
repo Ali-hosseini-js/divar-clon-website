@@ -1,17 +1,16 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import connectDB from "@/utils/connectDB";
+import { getServerSession } from "next-auth";
 import DivarProfile from "@/models/DivarProfile";
 import DivarUser from "@/models/DivarUser";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-export async function PATCH(req, context) {
+export async function DELETE(req, context) {
   try {
     await connectDB();
 
     const id = context.params.profileId;
 
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(req);
     if (!session) {
       return NextResponse.json(
         {
@@ -21,8 +20,7 @@ export async function PATCH(req, context) {
       );
     }
 
-    console.log("session", session.user);
-    const user = await DivarUser.findOne({ mobile: session.user.mobile });
+    const user = await DivarUser.findOne({ email: session.user.email });
     if (!user) {
       return NextResponse.json(
         {
@@ -31,20 +29,23 @@ export async function PATCH(req, context) {
         { status: 404 }
       );
     }
-    if (user.role !== "ADMIN") {
+
+    const profile = await DivarProfile.findOne({ _id: id });
+    if (!user._id.equals(profile.userId)) {
       return NextResponse.json(
-        { error: "دسترسی محدود" },
         {
-          status: 403,
-        }
+          error: "دستری شما به این آگهی محدود شده است",
+        },
+        { status: 403 }
       );
     }
 
-    const profile = await DivarProfile.findOne({ _id: id });
-    profile.published = true;
-    profile.save();
+    await DivarProfile.deleteOne({ _id: id });
 
-    return NextResponse.json({ message: "آگهی منتشر شد" }, { status: 200 });
+    return NextResponse.json(
+      { message: "آگهی موردنظر حذف شد" },
+      { status: 200 }
+    );
   } catch (err) {
     console.log(err);
     return NextResponse.json(
