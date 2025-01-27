@@ -1,45 +1,31 @@
-"use client";
-
 import Image from "next/image";
-import { useEffect, useState } from "react";
-import Loader from "@/module/Loader";
+import Link from "next/link";
+import connectDB from "@/utils/connectDB";
+import DivarAdmin from "@/models/DivarAdmin";
 
-function Sidebar() {
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState({});
+async function Sidebar() {
+  await connectDB();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch("api/admin");
-      const data = await res.json();
-      setData(data);
-      setLoading(false);
-    };
-    fetchData();
-  }, []);
+  const category = await DivarAdmin.find();
+
+  if (!category) return <p>دسته بندی وجود ندارد</p>;
 
   return (
     <div className="mt-[30px] w-[200px]">
-      {loading ? (
-        <Loader />
-      ) : (
-        <>
-          <h4 className="font-medium">دسته ها</h4>
-          <ul>
-            {data.data.map((category) => (
-              <li key={category._id} className="flex my-5">
-                <Image
-                  alt=""
-                  src={`${category.icon}.svg`}
-                  width={20}
-                  height={20}
-                />
-                <p className="font-light mr-3 text-gray-500">{category.name}</p>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
+      <h4 className="font-medium ">دسته ها</h4>
+      <Link className="flex my-5" href="/">
+        همه
+      </Link>
+      {category.map((category) => (
+        <Link
+          key={category._id}
+          className="flex my-5"
+          href={`/${category.slug}`}
+        >
+          <Image alt="" src={`${category.icon}.svg`} width={20} height={20} />
+          <p className="font-light mr-3 text-gray-500">{category.name}</p>
+        </Link>
+      ))}
     </div>
   );
 }

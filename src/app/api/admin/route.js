@@ -1,6 +1,6 @@
 import connectDB from "@/utils/connectDB";
-import { NextResponse } from "next/server";
 import DivarAdmin from "@/models/DivarAdmin";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {

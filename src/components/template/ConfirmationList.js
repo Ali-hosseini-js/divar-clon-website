@@ -5,16 +5,18 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { sp } from "@/utils/replaceNumber";
 import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 function ConfirmationList() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
 
+  const router = useRouter();
+
   const fetchData = async () => {
     const res = await fetch("api/admin/post");
     const data = await res.json();
     setData(data);
-    console.log("data:", data);
     setLoading(false);
   };
 
@@ -29,7 +31,7 @@ function ConfirmationList() {
       toast.error(data.error);
     } else {
       toast.success(data.message);
-      fetchData();
+      router.refresh();
     }
   };
 
@@ -40,8 +42,8 @@ function ConfirmationList() {
       toast.error(data.error);
     } else {
       toast.success(data.message);
+      router.refresh();
     }
-    fetchData();
   };
 
   return (

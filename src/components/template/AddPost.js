@@ -119,7 +119,7 @@ function AddPost() {
         className="block w-[300px] p-1 border border-solid border-gray-300 rounded mb-8"
       >
         {data.data?.map((i) => (
-          <option key={i._id} value={i._id}>
+          <option key={i._id} value={i.slug}>
             {i.name}
           </option>
         ))}
