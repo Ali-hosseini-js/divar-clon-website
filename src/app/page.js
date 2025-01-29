@@ -3,6 +3,7 @@ import Main from "@/template/Main";
 import DivarProfile from "@/models/DivarProfile";
 import connectDB from "@/utils/connectDB";
 import Pagination from "@/module/Pagination";
+import toast, { Toaster } from "react-hot-toast";
 
 export default async function Home({ searchParams }) {
   await connectDB();
@@ -19,8 +20,6 @@ export default async function Home({ searchParams }) {
 
   const finalData = await query.skip(skipAmount).limit(pageSize).exec();
 
-  if (!finalData || finalData.length === 0) return <h3>مشکلی پیش آمده است</h3>;
-
   const totalProfile = await DivarProfile.countDocuments(
     searchParams?.category
       ? { published: true, category: searchParams.category }
@@ -33,13 +32,21 @@ export default async function Home({ searchParams }) {
     <div className="flex justify-between">
       <Sidebar />
       <div className="flex flex-col items-center w-full">
-        <Main data={finalData} />
-        <div className="mt-10">
-          <Pagination
-            pageNumber={searchParams?.page ? +searchParams.page : 1}
-            isNext={isNext}
-          />
-        </div>
+        {!finalData || finalData.length === 0 ? (
+          <p className="bg-main text-white py-2 px-6 text-center rounded mr-[40px]">
+            کالایی در این دسته بندی وجود ندارد
+          </p>
+        ) : (
+          <>
+            <Main data={finalData} />
+            <div className="mt-10">
+              <Pagination
+                pageNumber={searchParams?.page ? +searchParams.page : 1}
+                isNext={isNext}
+              />
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
