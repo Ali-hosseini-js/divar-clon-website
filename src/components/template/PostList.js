@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { sp } from "@/utils/replaceNumber";
 import { useRouter } from "next/navigation";
+import toast, { Toaster } from "react-hot-toast";
 
 function PostList() {
   const [loading, setLoading] = useState(true);
@@ -79,6 +80,7 @@ function PostList() {
           ))}
         </>
       )}
+      <Toaster />
     </div>
   );
 }

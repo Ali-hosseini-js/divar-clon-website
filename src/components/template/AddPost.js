@@ -1,77 +1,76 @@
-"use client";
+import connectDB from "@/utils/connectDB";
+import { writeFile } from "fs/promises";
+import path from "path";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/api/auth/[...nextauth]/route";
+import DivarProfile from "@/models/DivarProfile";
+import DivarUser from "@/models/DivarUser";
+import DivarAdmin from "@/models/DivarAdmin";
+import { Types } from "mongoose";
+import { revalidatePath } from "next/cache";
 
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
+async function AddPost() {
+  const upload = async (formData) => {
+    "use server";
 
-function AddPost() {
-  const [data, setData] = useState({});
+    await connectDB();
 
-  const [form, setForm] = useState({
-    title: "",
-    content: "",
-    category: "",
-    city: "",
-    amount: null,
-    images: null,
-  });
+    const file = formData.get("images");
+    const title = formData.get("title");
+    const content = formData.get("content");
+    const category = formData.get("category");
+    const city = formData.get("city");
+    const amount = formData.get("amount");
 
-  const router = useRouter();
+    const randomKey = Math.floor(
+      1000000000 + Math.random() * 9000000000
+    ).toString();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch("api/admin");
-      const data = await res.json();
-      setData(data);
-      console.log(data);
-    };
-    fetchData();
-  }, []);
-
-  const changeHandler = (event) => {
-    const name = event.target.name;
-    if (name !== "images") {
-      setForm({ ...form, [name]: event.target.value });
-    } else {
-      setForm({ ...form, [name]: event.target.files[0] });
+    if (!file || !title || !content || !category || !city || !amount) {
+      throw new Error("تمام موارد را تکمیل کنید.");
     }
-  };
 
-  const addHandler = async (event) => {
-    event.preventDefault();
-    //while we have file for uploading to database we can not use json format we must use FormData
-    //formData for frontend and multer for backend
-    const formData = new FormData();
-    for (let i in form) {
-      formData.append(i, form[i]);
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    const filePath = path.join("public", "uploads", `${randomKey}.jpg`);
+    const imagePath = `/uploads/${randomKey}.jpg`;
+    console.log("path:", imagePath);
+    await writeFile(filePath, buffer);
+
+    // Get the session
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      throw new Error("لطفا وارد حساب کاربری خود شوید.");
     }
-    console.log(form);
-    console.log(formData);
-    if (
-      !form.title ||
-      !form.content ||
-      !form.category ||
-      !form.city ||
-      !form.amount ||
-      !form.images
-    )
-      return toast.error("لطفا تمام موارد را تکمیل کنید.");
 
-    const res = await fetch("/api/user", {
-      method: "POST",
-      body: formData,
+    // Find the user
+    const user = await DivarUser.findOne({ mobile: session.user.mobile });
+    if (!user) {
+      throw new Error("حساب کاربری یافت نشد.");
+    }
+
+    const userId = user._id.toString();
+
+    // Create a new profile
+    await DivarProfile.create({
+      title,
+      content,
+      category,
+      city,
+      amount: +amount,
+      image: imagePath, // Save the file path
+      userId: Types.ObjectId.createFromHexString(userId),
     });
-    const data = await res.json();
-    if (data.error) {
-      toast.error(data.error);
-    } else {
-      toast.success(data.message);
-    }
-    router.refresh();
+    revalidatePath("/dashboard");
   };
+
+  await connectDB();
+
+  const category = await DivarAdmin.find();
 
   return (
-    <form onChange={changeHandler}>
+    <form action={upload}>
       <h3 className="mb-[30px] border-b-4 border-solid border-main w-fit pb-1">
         افزودن آگهی
       </h3>
@@ -118,7 +117,7 @@ function AddPost() {
         id="category"
         className="block w-[300px] p-1 border border-solid border-gray-300 rounded mb-8"
       >
-        {data.data?.map((i) => (
+        {category.map((i) => (
           <option key={i._id} value={i.slug}>
             {i.name}
           </option>
@@ -134,12 +133,11 @@ function AddPost() {
         className="block w-[300px] p-1 border border-solid border-gray-300 rounded mb-8"
       />
       <button
-        onClick={addHandler}
+        type="submit"
         className="bg-main text-white border-none py-2 px-6 rounded text-sm cursor-pointer"
       >
         ایجاد
       </button>
-      <Toaster />
     </form>
   );
 }
