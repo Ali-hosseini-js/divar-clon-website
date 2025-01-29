@@ -3,6 +3,7 @@ import connectDB from "@/utils/connectDB";
 import { getServerSession } from "next-auth";
 import DivarProfile from "@/models/DivarProfile";
 import DivarUser from "@/models/DivarUser";
+import { authOptions } from "../../../auth/[...nextauth]/route";
 
 export async function DELETE(req, context) {
   try {
@@ -10,7 +11,7 @@ export async function DELETE(req, context) {
 
     const id = context.params.profileId;
 
-    const session = await getServerSession(req);
+    const session = await getServerSession(authOptions);
     if (!session) {
       return NextResponse.json(
         {
@@ -20,7 +21,7 @@ export async function DELETE(req, context) {
       );
     }
 
-    const user = await DivarUser.findOne({ email: session.user.email });
+    const user = await DivarUser.findOne({ mobile: session.user.mobile });
     if (!user) {
       return NextResponse.json(
         {
@@ -29,8 +30,9 @@ export async function DELETE(req, context) {
         { status: 404 }
       );
     }
-
+    console.log("user-id", user._id);
     const profile = await DivarProfile.findOne({ _id: id });
+    console.log("profile-id", profile.userId);
     if (!user._id.equals(profile.userId)) {
       return NextResponse.json(
         {
