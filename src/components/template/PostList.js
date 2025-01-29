@@ -4,16 +4,18 @@ import Loader from "@/module/Loader";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { sp } from "@/utils/replaceNumber";
+import { useRouter } from "next/navigation";
 
 function PostList() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
 
+  const router = useRouter();
+
   const fetchData = async () => {
     const res = await fetch("api/user");
     const data = await res.json();
     setData(data);
-    console.log("data:", data);
     setLoading(false);
   };
   useEffect(() => {
@@ -27,11 +29,9 @@ function PostList() {
       toast.error(data.error);
     } else {
       toast.success(data.message);
+      router.refresh();
     }
-    fetchData();
   };
-
-  const editHandler = () => {};
 
   return (
     <div>
