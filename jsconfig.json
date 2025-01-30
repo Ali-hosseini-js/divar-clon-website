@@ -13,13 +13,5 @@
       "@/api/*": ["src/app/api/*"],
       "@/constants/*": ["src/constants/*"]
     }
-  },
-  "test": {
-    "PORT": 3000,
-    "MONGODB_URI": "mongodb+srv://a75hosseini:12345@authcluster.yvbmh.mongodb.net/?retryWrites=true&w=majority&appName=authCluster"
-  },
-  "development": {
-    "PORT": 3000,
-    "MONGODB_URI": "mongodb+srv://a75hosseini:12345@authcluster.yvbmh.mongodb.net/?retryWrites=true&w=majority&appName=authCluster"
   }
 }

@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import mongoose from "mongoose";
-dotenv.config();
+dotenv.config({ path: "MONGO_URI" });
 
 async function connectDB() {
   if (mongoose.connections[0].readyState) return;
