@@ -1,7 +1,9 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import { postCategory } from "@/actions/admin";
 
 function CategoryForm() {
   const [form, setForm] = useState({ name: "", slug: "", icon: "" });
@@ -10,24 +12,25 @@ function CategoryForm() {
     setForm({ ...form, [event.target.name]: event.target.value });
   };
 
-  const submitHandler = async () => {
-    if (!form.name || !form.slug || !form.icon)
-      return toast.error("لطفا تمام موارد را تکمیل کنید.");
+  const queryClient = useQueryClient();
 
-    const res = await fetch("/api/admin", {
-      method: "POST",
-      body: JSON.stringify({ form }),
-      headers: { "Content-Type": "application/json" },
-    });
-    const data = await res.json();
-    if (data.error) {
-      toast.error(data.error);
-    } else {
-      toast.success(data.message);
-    }
+  const { mutate } = useMutation({
+    mutationFn: postCategory,
+    onSuccess: () => {
+      toast.success("دسته بندی منتشر شد");
+      queryClient.invalidateQueries({ queryKey: ["adminCategory"] });
+    },
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const submitHandler = async (event) => {
+    event.preventDefault();
+    mutate(form);
   };
   return (
-    <form onChange={changeHandler} onSubmit={submitHandler}>
+    <form onChange={changeHandler}>
       <h3 className="mb-[30px] border-b-4 border-solid border-main w-fit pb-1">
         دسته بندی جدید
       </h3>
@@ -59,7 +62,7 @@ function CategoryForm() {
         className="block w-[300px] p-1 border border-solid border-gray-300 rounded mb-[30px]"
       />
       <button
-        type="submit"
+        onClick={submitHandler}
         className="bg-main text-white border-none py-2 px-6 rounded text-sm cursor-pointer"
       >
         ایجاد

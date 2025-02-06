@@ -3,6 +3,7 @@ import "./globals.css";
 import Footer from "@/layout/Footer";
 import Header from "@/layout/Header";
 import NextAuthProvider from "@/providers/NextAuthProvider";
+import ReactQueryProvider from "@/providers/ReactQueryProvider";
 
 export const metadata = {
   title: "سایت دیوار",
@@ -15,9 +16,11 @@ export default function RootLayout({ children }) {
     <html lang="fa" dir="rtl">
       <body className={vazir.className}>
         <NextAuthProvider>
-          <Header />
-          {children}
-          <Footer />
+          <ReactQueryProvider>
+            <Header />
+            {children}
+            <Footer />
+          </ReactQueryProvider>
         </NextAuthProvider>
       </body>
     </html>

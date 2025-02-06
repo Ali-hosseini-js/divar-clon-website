@@ -1,15 +1,21 @@
+"use client";
+
 import Image from "next/image";
-import connectDB from "@/utils/connectDB";
-import DivarAdmin from "@/models/DivarAdmin";
+import { useQuery } from "@tanstack/react-query";
+import adminCategory from "@/actions/admin";
 
-async function CategoryList() {
-  await connectDB();
-
-  const category = await DivarAdmin.find();
+function CategoryList() {
+  const { data } = useQuery({
+    queryKey: ["adminCategory"],
+    queryFn: async () => adminCategory(),
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
 
   return (
     <div className="mt-[50px] mb-[70px]">
-      {category.map((i) => (
+      {data?.data?.map((i) => (
         <div
           key={i._id}
           className="flex my-[20px] p-4 border-2 border-solid border-[#eaeaea] rounded"
